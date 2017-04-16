@@ -43,7 +43,6 @@ public class Attendance extends AppCompatActivity {
     private RecyclerView attendanceList;
     private AdapteAttendance mAdapter;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,11 +63,12 @@ public class Attendance extends AppCompatActivity {
     public void startAt(View arg0) {
         new AsyncStart(Attendance.this,"startAT.inc.php");
     }
-    public void stopAt(View arg0) {
 
-        Intent intent = new Intent(Attendance.this,SuccessActivity.class);
-        startActivity(intent);
+    public void stopAt(View arg0) {
+//        Intent intent = new Intent(Attendance.this,SuccessActivity.class);
+//        startActivity(intent);
         Toast.makeText(Attendance.this,"Attendance saved",Toast.LENGTH_LONG).show();
+        finish();
     }
 
     private class AsyncStart extends GlobalAsyncTask{
@@ -86,7 +86,7 @@ public class Attendance extends AppCompatActivity {
         }
 
         @Override
-        public void goPostExecute(String result) {
+        public void goPostExecute(String result,String content) {
 
             if(result.equalsIgnoreCase("true")) {
                 new AsyncATList(Attendance.this,"returnAT.inc.php");
@@ -114,9 +114,9 @@ public class Attendance extends AppCompatActivity {
         }
 
         @Override
-        public void goPostExecute(String result) {
+        public void goPostExecute(String result,String content) {
 
-            if(!result.equalsIgnoreCase("false")) {
+            if(content.equalsIgnoreCase("application/json")) {
                 List<AttendanceList> data=new ArrayList<>();
                 try {
                     JSONArray jArray = new JSONArray(result);

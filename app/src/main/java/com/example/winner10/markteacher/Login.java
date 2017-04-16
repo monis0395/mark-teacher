@@ -38,7 +38,6 @@ public class Login extends AppCompatActivity {
     private EditText etPassword;
     public static final String MyPREFERENCES = "MyPrefs" ;
     SharedPreferences sharedPreferences;
-    private String HOSTNAME;
     StringRes sr;
     private String username;
     private String password;
@@ -51,8 +50,7 @@ public class Login extends AppCompatActivity {
         // Get Reference to variables
         etEmail = (EditText) findViewById(R.id.username);
         etPassword = (EditText) findViewById(R.id.password);
-        sr = new StringRes();
-        HOSTNAME = getString(R.string.hostname);
+        sr = ((StringRes)getApplicationContext());
         sharedPreferences = getSharedPreferences(MyPREFERENCES, Login.MODE_PRIVATE);
 
         username = sharedPreferences.getString("username","");
@@ -98,8 +96,8 @@ public class Login extends AppCompatActivity {
                             public void onClick(DialogInterface dialog,int id) {
                                 // get user input and set it to result
                                 // edit text
-                                sr.HOSTNAME = userInput.getText().toString();
-
+                                sr.setHOSTNAME(userInput.getText().toString());
+                                Toast.makeText(Login.this,"HOST set successfully!",Toast.LENGTH_LONG).show();
                             }
                         })
                 .setNegativeButton("Cancel",
@@ -114,6 +112,9 @@ public class Login extends AppCompatActivity {
 
         // show it
         alertDialog.show();
+//        Intent intent = new Intent(Login.this,SetHost.class);
+//        startActivity(intent);
+
     }
 
     private class AysnchLogin extends GlobalAsyncTask{
@@ -131,9 +132,9 @@ public class Login extends AppCompatActivity {
         }
 
         @Override
-        public void goPostExecute(String result) {
+        public void goPostExecute(String result,String content) {
 
-            if(!result.equalsIgnoreCase("false") && !result.equalsIgnoreCase("exception") && !result.equalsIgnoreCase("unsuccessful"))
+            if(content.equalsIgnoreCase("application/json"))
 //            if(result.equalsIgnoreCase("true"))
             {
                 SharedPreferences.Editor editor = sharedPreferences.edit();

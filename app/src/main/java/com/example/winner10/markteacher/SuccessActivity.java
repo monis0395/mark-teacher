@@ -65,6 +65,7 @@ public class SuccessActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         sharedPreferences = getSharedPreferences(MyPREFERENCES, Login.MODE_PRIVATE);
         username = sharedPreferences.getString("username","");
+        sr = ((StringRes)getApplicationContext());
 
 //        Toast.makeText(SuccessActivity.this,"useranme: "+username,Toast.LENGTH_LONG).show();
 
@@ -105,7 +106,7 @@ public class SuccessActivity extends AppCompatActivity
         }
 
         @Override
-        public void goPostExecute(String result) {
+        public void goPostExecute(String result, String content) {
 
             List<DailyPeriod> data=new ArrayList<>();
             try {
@@ -115,7 +116,6 @@ public class SuccessActivity extends AppCompatActivity
                 TextView textPeriod;
                 textPeriod= (TextView) findViewById(R.id.textPeriod);
                 textPeriod.setText("/ "+jArray.length()+"");
-
 
                 // Extract data from json and store into ArrayList as class objects
                 for(int i=0;i<jArray.length();i++){
@@ -218,9 +218,8 @@ public class SuccessActivity extends AppCompatActivity
                                 public void onClick(DialogInterface dialog,int id) {
                                     // get user input and set it to result
                                     // edit text
-                                    sr.HOSTNAME = userInput.getText().toString();
-
-
+                                    sr.setHOSTNAME(userInput.getText().toString());
+                                    Toast.makeText(SuccessActivity.this,"HOST set successfully!",Toast.LENGTH_LONG).show();
                                 }
                             })
                     .setNegativeButton("Cancel",
@@ -235,6 +234,9 @@ public class SuccessActivity extends AppCompatActivity
 
             // show it
             alertDialog.show();
+//            Intent intent = new Intent(SuccessActivity.this,SetHost.class);
+//            startActivity(intent);
+
 
         } else if (id == R.id.nav_share) {
 

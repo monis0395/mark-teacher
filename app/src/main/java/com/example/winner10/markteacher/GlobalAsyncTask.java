@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
+import android.preference.PreferenceActivity;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.widget.Toast;
@@ -25,16 +26,18 @@ abstract class GlobalAsyncTask extends android.os.AsyncTask<String, String, Stri
     private Context context;
     private String URL;
     private URL url= null;
+    private HttpURLConnection conn;
     private ProgressDialog pdLoading;
     private static final int CONNECTION_TIMEOUT=10000;
     private static final int READ_TIMEOUT=15000;
 
     abstract Uri.Builder urlBuilder();
-    abstract void goPostExecute(String result);
+    abstract void goPostExecute(String result, String content);
 
     GlobalAsyncTask(Context context, String fileName){
         this.context = context;
-        String HOSTNAME = "http://192.168.0.105/mark_demo/";
+        StringRes sr = ((StringRes)context.getApplicationContext());
+        String HOSTNAME = sr.getHOSTNAME();
         URL = HOSTNAME +""+fileName;
         pdLoading = new ProgressDialog(context);
     }
@@ -47,7 +50,6 @@ abstract class GlobalAsyncTask extends android.os.AsyncTask<String, String, Stri
         pdLoading.setMessage("\tLoading...");
         pdLoading.setCancelable(false);
         pdLoading.show();
-
     }
 
     @Override
@@ -60,9 +62,9 @@ abstract class GlobalAsyncTask extends android.os.AsyncTask<String, String, Stri
         } catch (MalformedURLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            return "URL exception";
+            return "URL exception\n"+e;
         }
-        HttpURLConnection conn;
+
         try {
             // Setup HttpURLConnection class to send and receive data from php and mysql
             conn = (HttpURLConnection)url.openConnection();
@@ -74,7 +76,7 @@ abstract class GlobalAsyncTask extends android.os.AsyncTask<String, String, Stri
             conn.setDoInput(true);
             conn.setDoOutput(true);
 
-            // Append parameters to URL
+             // Append parameters to URL
 
             Uri.Builder builder = urlBuilder();
             String query = builder.build().getEncodedQuery();
@@ -92,7 +94,7 @@ abstract class GlobalAsyncTask extends android.os.AsyncTask<String, String, Stri
         } catch (IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
-            return "HTTP exception "+e1;
+            return "HTTP exception\n"+e1;
         }
 
         try {
@@ -122,12 +124,10 @@ abstract class GlobalAsyncTask extends android.os.AsyncTask<String, String, Stri
 
         } catch (IOException e) {
             e.printStackTrace();
-            return "IO exception";
+            return "IO exception\n"+e;
         } finally {
             conn.disconnect();
         }
-
-
     }
 
     @Override
@@ -136,9 +136,10 @@ abstract class GlobalAsyncTask extends android.os.AsyncTask<String, String, Stri
         //this method will be running on UI thread
         pdLoading.dismiss();
 
-       if(!result.equalsIgnoreCase("unsuccessful") || !result.endsWith("exception"))
+       if(!result.contains("exception") && !result.contains("unsuccessful"))
         {
-            goPostExecute(result);
+            String content = conn.getContentType();
+            goPostExecute(result, content);
 
         }else if (result.equalsIgnoreCase("unsuccessful")) {
 
