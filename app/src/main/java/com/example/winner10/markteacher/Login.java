@@ -1,6 +1,7 @@
 package com.example.winner10.markteacher;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -62,8 +63,6 @@ public class Login extends AppCompatActivity {
         }
     }
 
-
-
     // Triggers when LOGIN Button clicked
     public void checkLogin(View arg0) {
 
@@ -72,7 +71,7 @@ public class Login extends AppCompatActivity {
         password = etPassword.getText().toString();
 
         // Initialize  AsyncLogin() class with email and password
-        new AsyncLogin().execute(username,password);
+        new AysnchLogin(Login.this,"login.inc.php");
 
     }
 
@@ -100,7 +99,7 @@ public class Login extends AppCompatActivity {
                                 // get user input and set it to result
                                 // edit text
                                 sr.HOSTNAME = userInput.getText().toString();
-                                new AsyncLogin().execute(username,password);
+
                             }
                         })
                 .setNegativeButton("Cancel",
@@ -117,132 +116,39 @@ public class Login extends AppCompatActivity {
         alertDialog.show();
     }
 
-    private class AsyncLogin extends AsyncTask<String, String, String>
-    {
-        ProgressDialog pdLoading = new ProgressDialog(Login.this);
-        HttpURLConnection conn;
-        URL url = null;
+    private class AysnchLogin extends GlobalAsyncTask{
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            //this method will be running on UI thread
-            pdLoading.setMessage("\tLoading...");
-            pdLoading.setCancelable(false);
-            pdLoading.show();
-
-        }
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-
-                // Enter URL address where your php file resides
-                url = new URL(HOSTNAME+"login.inc.php");
-
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                return "exception";
-            }
-            try {
-                // Setup HttpURLConnection class to send and receive data from php and mysql
-                conn = (HttpURLConnection)url.openConnection();
-                conn.setReadTimeout(READ_TIMEOUT);
-                conn.setConnectTimeout(CONNECTION_TIMEOUT);
-                conn.setRequestMethod("POST");
-
-                // setDoInput and setDoOutput method depict handling of both send and receive
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-
-                // Append parameters to URL
-                Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("username", params[0])
-                        .appendQueryParameter("password", params[1]);
-                String query = builder.build().getEncodedQuery();
-
-                // Open connection for sending data
-                OutputStream os = conn.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(
-                        new OutputStreamWriter(os, "UTF-8"));
-                writer.write(query);
-                writer.flush();
-                writer.close();
-                os.close();
-                conn.connect();
-
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-                return "exception";
-            }
-
-            try {
-
-                int response_code = conn.getResponseCode();
-
-                // Check if successful connection made
-                if (response_code == HttpURLConnection.HTTP_OK) {
-
-                    // Read data sent from server
-                    InputStream input = conn.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                    StringBuilder result = new StringBuilder();
-                    String line;
-
-                    while ((line = reader.readLine()) != null) {
-                        result.append(line);
-                    }
-
-                    // Pass data to onPostExecute method
-                    return(result.toString());
-
-                }else{
-
-                    return("unsuccessful");
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                return "exception";
-            } finally {
-                conn.disconnect();
-            }
-
-
+        AysnchLogin(Context context, String url){
+            super(context,url);
+            execute();
         }
 
         @Override
-        protected void onPostExecute(String result) {
+        public Uri.Builder urlBuilder() {
+            return new Uri.Builder()
+                    .appendQueryParameter("username", username)
+                    .appendQueryParameter("password", password);
+        }
 
-            //this method will be running on UI thread
-
-            pdLoading.dismiss();
+        @Override
+        public void goPostExecute(String result) {
 
             if(!result.equalsIgnoreCase("false") && !result.equalsIgnoreCase("exception") && !result.equalsIgnoreCase("unsuccessful"))
 //            if(result.equalsIgnoreCase("true"))
             {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("username", username);
+                editor.apply();
 
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("username", username);
-                    editor.apply();
-
-                    Intent intent = new Intent(Login.this,SuccessActivity.class);
-                    startActivity(intent);
-                    Login.this.finish();
+                Intent intent = new Intent(Login.this,SuccessActivity.class);
+                startActivity(intent);
+                Login.this.finish();
 
             }else if (result.equalsIgnoreCase("false")){
-
-                // If username and password does not match display a error message
                 Toast.makeText(Login.this, "Invalid email or password", Toast.LENGTH_LONG).show();
-
-            } else if (result.equalsIgnoreCase("exception") || result.equalsIgnoreCase("unsuccessful")) {
-
-                Toast.makeText(Login.this, "OOPs! Something went wrong. Connection Problem.", Toast.LENGTH_LONG).show();
-
             }
         }
 
     }
+
 }

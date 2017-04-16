@@ -26,8 +26,6 @@ public class AdapterDailyPeriod extends RecyclerView.Adapter<RecyclerView.ViewHo
     public String current_location;
     public String current_subjectName;
     public String current_teacherName;
-    private SharedPreferences sharedPreferences;
-    public static final String MyPREFERENCES = "MyPrefs" ;
 
     // create constructor to innitilize context and data sent from Login
     public AdapterDailyPeriod(Context context, List<DailyPeriod> data){
@@ -43,7 +41,6 @@ public class AdapterDailyPeriod extends RecyclerView.Adapter<RecyclerView.ViewHo
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view=inflater.inflate(R.layout.container_daily, parent,false);
         MyHolder holder = new MyHolder(view);
-        sharedPreferences = context.getSharedPreferences(MyPREFERENCES, Login.MODE_PRIVATE);
         return holder;
     }
 
@@ -73,7 +70,6 @@ public class AdapterDailyPeriod extends RecyclerView.Adapter<RecyclerView.ViewHo
                 context.startActivity(intent);
             }
         });
-
     }
 
     // return total item from List
@@ -88,7 +84,6 @@ public class AdapterDailyPeriod extends RecyclerView.Adapter<RecyclerView.ViewHo
         TextView textTeacherName;
         TextView textTime;
         TextView textLocation;
-        LinearLayout lnrLayout;
 
         // create constructor to get widget reference
         public MyHolder(View itemView) {
