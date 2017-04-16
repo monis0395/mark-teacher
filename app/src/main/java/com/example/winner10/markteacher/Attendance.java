@@ -1,6 +1,7 @@
 package com.example.winner10.markteacher;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -39,20 +40,14 @@ public class Attendance extends AppCompatActivity {
     public String teacher;
     public String column;
     public String table;
-    public String HOSTNAME;
     private RecyclerView attendanceList;
     private AdapteAttendance mAdapter;
-    public static final int CONNECTION_TIMEOUT=10000;
-    public static final int READ_TIMEOUT=15000;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendance);
-
-        StringRes sr = new StringRes();
-        HOSTNAME = getString(R.string.hostname);
 
         subject = getIntent().getStringExtra("subjectName");
         teacher = getIntent().getStringExtra("teacherName");
@@ -63,13 +58,11 @@ public class Attendance extends AppCompatActivity {
 
         column = date;
         table = subject+"-"+teacher;
-        String output = "column "+column+" \ntable "+table+"\n";
-
     }
 
     // Triggers when LOGIN Button clicked
     public void startAt(View arg0) {
-        new AsyncStart().execute(column,table);
+        new AsyncStart(Attendance.this,"startAT.inc.php");
     }
     public void stopAt(View arg0) {
 
@@ -78,267 +71,80 @@ public class Attendance extends AppCompatActivity {
         Toast.makeText(Attendance.this,"Attendance saved",Toast.LENGTH_LONG).show();
     }
 
-    private class AsyncStart extends AsyncTask<String, String, String>
-    {
-        ProgressDialog pdLoading = new ProgressDialog(Attendance.this);
-        HttpURLConnection conn;
-        URL url = null;
+    private class AsyncStart extends GlobalAsyncTask{
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            //this method will be running on UI thread
-            pdLoading.setMessage("\tLoading...");
-            pdLoading.setCancelable(false);
-            pdLoading.show();
-
-        }
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-
-                // Enter URL address where your php file resides
-                url = new URL(HOSTNAME+"startAT.inc.php");
-
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                return "exception";
-            }
-            try {
-                // Setup HttpURLConnection class to send and receive data from php and mysql
-                conn = (HttpURLConnection)url.openConnection();
-                conn.setReadTimeout(READ_TIMEOUT);
-                conn.setConnectTimeout(CONNECTION_TIMEOUT);
-                conn.setRequestMethod("POST");
-
-                // setDoInput and setDoOutput method depict handling of both send and receive
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-
-                // Append parameters to URL
-                Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("column", params[0])
-                        .appendQueryParameter("table", params[1]);
-                String query = builder.build().getEncodedQuery();
-
-                // Open connection for sending data
-                OutputStream os = conn.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(
-                        new OutputStreamWriter(os, "UTF-8"));
-                writer.write(query);
-                writer.flush();
-                writer.close();
-                os.close();
-                conn.connect();
-
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-                return "exception";
-            }
-
-            try {
-
-                int response_code = conn.getResponseCode();
-
-                // Check if successful connection made
-                if (response_code == HttpURLConnection.HTTP_OK) {
-
-                    // Read data sent from server
-                    InputStream input = conn.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                    StringBuilder result = new StringBuilder();
-                    String line;
-
-                    while ((line = reader.readLine()) != null) {
-                        result.append(line);
-                    }
-
-                    // Pass data to onPostExecute method
-                    return(result.toString());
-
-                }else{
-
-                    return("unsuccessful");
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                return "exception";
-            } finally {
-                conn.disconnect();
-            }
-
-
+        AsyncStart(Context context, String url){
+            super(context,url);
+            execute();
         }
 
         @Override
-        protected void onPostExecute(String result) {
+        public Uri.Builder urlBuilder() {
+            return new Uri.Builder()
+                    .appendQueryParameter("column", column)
+                    .appendQueryParameter("table", table);
+        }
 
-            //this method will be running on UI thread
+        @Override
+        public void goPostExecute(String result) {
 
-            pdLoading.dismiss();
-            TextView textError;
-            textError= (TextView) findViewById(R.id.textError);
-            textError.setText(Html.fromHtml(result));
-            Toast.makeText(Attendance.this, "result "+result, Toast.LENGTH_LONG).show();
-
-
-            if(result.equalsIgnoreCase("true"))
-            {
-                new AsyncATList().execute(column,table);
+            if(result.equalsIgnoreCase("true")) {
+                new AsyncATList(Attendance.this,"returnAT.inc.php");
 
             }else if (result.equalsIgnoreCase("false")){
-
-                // If username and password does not match display a error message
                 Toast.makeText(Attendance.this, "FALSE", Toast.LENGTH_LONG).show();
-
-            } else if (result.equalsIgnoreCase("exception") || result.equalsIgnoreCase("unsuccessful")) {
-
-                Toast.makeText(Attendance.this, "OOPs! Something went wrong. Connection Problem.", Toast.LENGTH_LONG).show();
-
             }
         }
-
     }
 
-    private class AsyncATList extends AsyncTask<String, String, String>
-    {
-        ProgressDialog pdLoading = new ProgressDialog(Attendance.this);
-        HttpURLConnection conn;
-        URL url = null;
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
 
-            //this method will be running on UI thread
-            pdLoading.setMessage("\tLoading...");
-            pdLoading.setCancelable(false);
-            pdLoading.show();
+    private class AsyncATList extends GlobalAsyncTask{
 
+        AsyncATList(Context context, String url){
+            super(context,url);
+            execute();
         }
+
         @Override
-        protected String doInBackground(String... params) {
-            try {
+        public Uri.Builder urlBuilder() {
+            return new Uri.Builder()
+                    .appendQueryParameter("column", column)
+                    .appendQueryParameter("table", table);
+        }
 
-                // Enter URL address where your php file resides
-                url = new URL(HOSTNAME+"returnAT.inc.php");
+        @Override
+        public void goPostExecute(String result) {
 
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                return "exception";
-            }
-            try {
-                // Setup HttpURLConnection class to send and receive data from php and mysql
-                conn = (HttpURLConnection)url.openConnection();
-                conn.setReadTimeout(READ_TIMEOUT);
-                conn.setConnectTimeout(CONNECTION_TIMEOUT);
-                conn.setRequestMethod("POST");
+            if(!result.equalsIgnoreCase("false")) {
+                List<AttendanceList> data=new ArrayList<>();
+                try {
+                    JSONArray jArray = new JSONArray(result);
 
-                // setDoInput and setDoOutput method depict handling of both send and receive
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
+                    // Extract data from json and store into ArrayList as class objects
+                    for(int i=0;i<jArray.length();i++){
+                        JSONObject json_data = jArray.getJSONObject(i);
+                        AttendanceList studentData = new AttendanceList();
 
-                // Append parameters to URL
-                Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("column", params[0])
-                        .appendQueryParameter("table", params[1]);
-                String query = builder.build().getEncodedQuery();
-
-                // Open connection for sending data
-                OutputStream os = conn.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(
-                        new OutputStreamWriter(os, "UTF-8"));
-                writer.write(query);
-                writer.flush();
-                writer.close();
-                os.close();
-                conn.connect();
-
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-                return "exception";
-            }
-
-            try {
-
-                int response_code = conn.getResponseCode();
-
-                // Check if successful connection made
-                if (response_code == HttpURLConnection.HTTP_OK) {
-
-                    // Read data sent from server
-                    InputStream input = conn.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                    StringBuilder result = new StringBuilder();
-                    String line;
-
-                    while ((line = reader.readLine()) != null) {
-                        result.append(line);
+                        studentData.sap = json_data.getString("student");
+                        studentData.status= json_data.getString("status");
+                        data.add(studentData);
                     }
 
-                    // Pass data to onPostExecute method
-                    return(result.toString());
+                    // Setup and Handover data to recyclerview
+                    attendanceList = (RecyclerView)findViewById(R.id.studentslist);
+                    mAdapter = new AdapteAttendance(Attendance.this, data);
+                    attendanceList.setAdapter(mAdapter);
+                    attendanceList.setLayoutManager(new LinearLayoutManager(Attendance.this));
 
-                }else{
-
-                    return("unsuccessful");
+                } catch (JSONException e) {
+                    Toast.makeText(Attendance.this, e.toString(), Toast.LENGTH_LONG).show();
                 }
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                return "exception";
-            } finally {
-                conn.disconnect();
+            }else if (result.equalsIgnoreCase("false")){
+                Toast.makeText(Attendance.this, "FALSE", Toast.LENGTH_LONG).show();
             }
-
-
         }
-
-        @Override
-        protected void onPostExecute(String result) {
-
-            //this method will be running on UI thread
-
-            pdLoading.dismiss();
-            List<AttendanceList> data=new ArrayList<>();
-            TextView textError;
-            textError= (TextView) findViewById(R.id.textError);
-            textError.setText(Html.fromHtml(result));
-//            Toast.makeText(Attendance.this, "result "+result, Toast.LENGTH_LONG).show();
-
-
-
-            try {
-                JSONArray jArray = new JSONArray(result);
-
-                // Extract data from json and store into ArrayList as class objects
-                for(int i=0;i<jArray.length();i++){
-                    JSONObject json_data = jArray.getJSONObject(i);
-                    AttendanceList studentData = new AttendanceList();
-
-                    studentData.sap = json_data.getString("student");
-                    studentData.status= json_data.getString("status");
-                    data.add(studentData);
-                }
-
-                // Setup and Handover data to recyclerview
-                attendanceList = (RecyclerView)findViewById(R.id.studentslist);
-                mAdapter = new AdapteAttendance(Attendance.this, data);
-                attendanceList.setAdapter(mAdapter);
-                attendanceList.setLayoutManager(new LinearLayoutManager(Attendance.this));
-
-            } catch (JSONException e) {
-                Toast.makeText(Attendance.this, e.toString(), Toast.LENGTH_LONG).show();
-            }
-
-
-        }
-
     }
+
 }

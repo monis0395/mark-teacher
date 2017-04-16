@@ -1,6 +1,8 @@
 package com.example.winner10.markteacher;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -61,15 +63,12 @@ public class SuccessActivity extends AppCompatActivity
         setContentView(R.layout.activity_success);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        sr = new StringRes();
-        HOSTNAME = getString(R.string.hostname);
         sharedPreferences = getSharedPreferences(MyPREFERENCES, Login.MODE_PRIVATE);
         username = sharedPreferences.getString("username","");
 
-
 //        Toast.makeText(SuccessActivity.this,"useranme: "+username,Toast.LENGTH_LONG).show();
 
-        new AsyncFetch().execute(username);
+        new AsyncFetch(SuccessActivity.this,"tdailyPeriod.inc.php");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -92,114 +91,23 @@ public class SuccessActivity extends AppCompatActivity
 
     }
 
-    private class AsyncFetch extends AsyncTask<String, String, String> {
-        ProgressDialog pdLoading = new ProgressDialog(SuccessActivity.this);
-        HttpURLConnection conn;
-        URL url = null;
+    private class AsyncFetch extends GlobalAsyncTask{
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            //this method will be running on UI thread
-            pdLoading.setMessage("\tLoading...");
-            pdLoading.setCancelable(false);
-            pdLoading.show();
-
+        AsyncFetch(Context context, String url){
+            super(context,url);
+            execute();
         }
 
         @Override
-        protected String doInBackground(String... params) {
-            try {
-
-                // Enter URL address where your json file resides
-                // Even you can make call to php file which returns json data
-                url = new URL(HOSTNAME+"tdailyPeriod.inc.php");
-
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                return e.toString();
-            }
-            try {
-
-                // Setup HttpURLConnection class to send and receive data from php and mysql
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(READ_TIMEOUT);
-                conn.setConnectTimeout(CONNECTION_TIMEOUT);
-                conn.setRequestMethod("POST");
-
-                // setDoInput and setDoOutput method depict handling of both send and receive
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-
-                // Append parameters to URL
-                Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("tsap", params[0]);
-                String query = builder.build().getEncodedQuery();
-
-                // Open connection for sending data
-                OutputStream os = conn.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(
-                        new OutputStreamWriter(os, "UTF-8"));
-                writer.write(query);
-                writer.flush();
-                writer.close();
-                os.close();
-                conn.connect();
-
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-                return e1.toString();
-            }
-
-            try {
-
-                int response_code = conn.getResponseCode();
-
-                // Check if successful connection made
-                if (response_code == HttpURLConnection.HTTP_OK) {
-
-                    // Read data sent from server
-                    InputStream input = conn.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                    StringBuilder result = new StringBuilder();
-                    String line;
-
-                    while ((line = reader.readLine()) != null) {
-                        result.append(line);
-                    }
-
-                    Log.d("djson", result.toString());
-
-                    // Pass data to onPostExecute method
-                    return (result.toString());
-
-                } else {
-
-                    return ("unsuccessful");
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                return e.toString();
-            } finally {
-                conn.disconnect();
-            }
-
-
+        public Uri.Builder urlBuilder() {
+            return new Uri.Builder()
+                    .appendQueryParameter("tsap", username);
         }
 
         @Override
-        protected void onPostExecute(String result) {
+        public void goPostExecute(String result) {
 
-            //this method will be running on UI thread
-
-            pdLoading.dismiss();
             List<DailyPeriod> data=new ArrayList<>();
-
-            pdLoading.dismiss();
             try {
 
                 JSONArray jArray = new JSONArray(result);
@@ -236,10 +144,10 @@ public class SuccessActivity extends AppCompatActivity
             } catch (JSONException e) {
                 Toast.makeText(SuccessActivity.this, e.toString(), Toast.LENGTH_LONG).show();
             }
-
         }
 
     }
+
 
     @Override
     public void onBackPressed() {
@@ -311,7 +219,7 @@ public class SuccessActivity extends AppCompatActivity
                                     // get user input and set it to result
                                     // edit text
                                     sr.HOSTNAME = userInput.getText().toString();
-                                    new AsyncFetch().execute(username);
+
 
                                 }
                             })
