@@ -32,8 +32,6 @@ import java.io.InputStreamReader;
 
 public class Login extends AppCompatActivity {
 
-    public static final int CONNECTION_TIMEOUT=10000;
-    public static final int READ_TIMEOUT=15000;
     private EditText etEmail;
     private EditText etPassword;
     public static final String MyPREFERENCES = "MyPrefs" ;
@@ -79,18 +77,14 @@ public class Login extends AppCompatActivity {
         LayoutInflater li = LayoutInflater.from(Login.this);
         View promptsView = li.inflate(R.layout.prompts, null);
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                Login.this);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Login.this);
 
         // set prompts.xml to alertdialog builder
         alertDialogBuilder.setView(promptsView);
-
-        final EditText userInput = (EditText) promptsView
-                .findViewById(R.id.editTextDialogUserInput);
+        final EditText userInput = (EditText) promptsView.findViewById(R.id.editTextDialogUserInput);
 
         // set dialog message
-        alertDialogBuilder
-                .setCancelable(false)
+        alertDialogBuilder.setCancelable(false)
                 .setPositiveButton("OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,int id) {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -47,15 +48,12 @@ import android.util.Log;
 public class SuccessActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static final int CONNECTION_TIMEOUT = 10000;
-    public static final int READ_TIMEOUT = 15000;
-    private String HOSTNAME;
+    private StringRes sr;
+    private String username;
     private RecyclerView dailyPeriod;
     private AdapterDailyPeriod mAdapter;
     public SharedPreferences sharedPreferences;
     public static final String MyPREFERENCES = "MyPrefs" ;
-    StringRes sr;
-    public String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,22 +61,6 @@ public class SuccessActivity extends AppCompatActivity
         setContentView(R.layout.activity_success);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        sharedPreferences = getSharedPreferences(MyPREFERENCES, Login.MODE_PRIVATE);
-        username = sharedPreferences.getString("username","");
-        sr = ((StringRes)getApplicationContext());
-
-//        Toast.makeText(SuccessActivity.this,"useranme: "+username,Toast.LENGTH_LONG).show();
-
-        new AsyncFetch(SuccessActivity.this,"tdailyPeriod.inc.php");
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -89,6 +71,18 @@ public class SuccessActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        View nav_header = navigationView.getHeaderView(0);
+
+        TextView nav_username = (TextView) nav_header.findViewById(R.id.username);
+
+        // set new title to the MenuItem
+
+//        initialize variables
+        sharedPreferences = getSharedPreferences(MyPREFERENCES, Login.MODE_PRIVATE);
+        username = sharedPreferences.getString("username","");
+        nav_username.setText(username);
+        sr = ((StringRes)getApplicationContext());
+        new AsyncFetch(SuccessActivity.this,"tdailyPeriod.inc.php");
 
     }
 
@@ -148,7 +142,6 @@ public class SuccessActivity extends AppCompatActivity
 
     }
 
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -195,7 +188,9 @@ public class SuccessActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_slideshow) {
 
-        } else if (id == R.id.nav_manage) {
+
+
+        } else if (id == R.id.nav_changeHost) {
 
             // get prompts.xml view
             LayoutInflater li = LayoutInflater.from(SuccessActivity.this);
@@ -243,7 +238,13 @@ public class SuccessActivity extends AppCompatActivity
         } else if (id == R.id.nav_send) {
 
 
+        }else if (id == R.id.nav_logout) {
 
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.remove("username");
+            editor.commit();
+            finish();
+            Toast.makeText(SuccessActivity.this,"logout chal raha hai YEEEEE!\nBYE",Toast.LENGTH_LONG).show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

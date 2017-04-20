@@ -62,7 +62,7 @@ abstract class GlobalAsyncTask extends android.os.AsyncTask<String, String, Stri
         } catch (MalformedURLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            return "URL exception\n"+e;
+            return "URL exception\n<br>"+e;
         }
 
         try {
@@ -94,7 +94,7 @@ abstract class GlobalAsyncTask extends android.os.AsyncTask<String, String, Stri
         } catch (IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
-            return "HTTP exception\n"+e1;
+            return "HTTP exception\n<br>"+e1;
         }
 
         try {
@@ -124,7 +124,7 @@ abstract class GlobalAsyncTask extends android.os.AsyncTask<String, String, Stri
 
         } catch (IOException e) {
             e.printStackTrace();
-            return "IO exception\n"+e;
+            return "IO exception\n<br>"+e;
         } finally {
             conn.disconnect();
         }
