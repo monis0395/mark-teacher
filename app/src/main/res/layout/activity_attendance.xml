@@ -30,15 +30,21 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/studentslist"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swifeRefresh"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:clickable="true"
-            android:paddingTop="0dp" />
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/studentslist"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:clickable="true"
+                android:paddingTop="0dp" />
+        </android.support.v4.widget.SwipeRefreshLayout>
 
     </LinearLayout>
 

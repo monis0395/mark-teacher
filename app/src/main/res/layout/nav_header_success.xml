@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:gravity="bottom"
     android:paddingTop="40dp"
-    android:paddingBottom="20dp"
+    android:paddingBottom="25dp"
+    android:paddingLeft="20dp"
     android:orientation="vertical">
 
     <TextView
@@ -15,15 +16,14 @@
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:text="Adam Lane"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:textSize="36sp"/>
+        android:textColor="@color/Black"
+        android:textSize="42sp"/>
 
     <TextView
         android:id="@+id/username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:textColor="@color/Black"
         android:text="60003130014"
         android:textSize="14sp" />
 

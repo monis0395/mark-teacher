@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,9 +51,10 @@ public class SuccessActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private StringRes sr;
-    private String username;
+    private String username, name;
     private RecyclerView dailyPeriod;
     private AdapterDailyPeriod mAdapter;
+    TextView nav_username, nav_user;
     public SharedPreferences sharedPreferences;
     public static final String MyPREFERENCES = "MyPrefs" ;
 
@@ -67,20 +70,22 @@ public class SuccessActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        navigationView.getMenu().getItem(0).setChecked(true);
         View nav_header = navigationView.getHeaderView(0);
-
-        TextView nav_username = (TextView) nav_header.findViewById(R.id.username);
-
-        // set new title to the MenuItem
+        nav_username = (TextView) nav_header.findViewById(R.id.username);
+        nav_user = (TextView) nav_header.findViewById(R.id.user);
+        setTitle("Today");
 
 //        initialize variables
         sharedPreferences = getSharedPreferences(MyPREFERENCES, Login.MODE_PRIVATE);
         username = sharedPreferences.getString("username","");
+        name = sharedPreferences.getString("name","");
         nav_username.setText(username);
+        nav_user.setText(name);
+
         sr = ((StringRes)getApplicationContext());
         new AsyncFetch(SuccessActivity.this,"tdailyPeriod.inc.php");
 
@@ -180,11 +185,16 @@ public class SuccessActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_today) {
+            // Handle the camera action
+            setTitle("Today");
+
+        } else if (id == R.id.nav_camera) {
             // Handle the camera action
 
 
         } else if (id == R.id.nav_gallery) {
+            setTitle("Reports");
 
         } else if (id == R.id.nav_slideshow) {
 
@@ -241,10 +251,12 @@ public class SuccessActivity extends AppCompatActivity
         }else if (id == R.id.nav_logout) {
 
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.remove("username");
+            editor.clear();
             editor.commit();
-            finish();
-            Toast.makeText(SuccessActivity.this,"logout chal raha hai YEEEEE!\nBYE",Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(SuccessActivity.this,Login.class);
+            startActivity(intent);
+            SuccessActivity.this.finish();
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

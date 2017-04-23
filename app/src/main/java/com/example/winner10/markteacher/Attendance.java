@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -42,11 +43,20 @@ public class Attendance extends AppCompatActivity {
     public String table;
     private RecyclerView attendanceList;
     private AdapteAttendance mAdapter;
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendance);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swifeRefresh);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new AsyncATList(Attendance.this,"returnAT.inc.php");
+            }
+        });
 
         subject = getIntent().getStringExtra("subjectName");
         teacher = getIntent().getStringExtra("teacherName");
@@ -54,9 +64,11 @@ public class Attendance extends AppCompatActivity {
         Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
         String date = df.format(c.getTime());
+        setTitle("Taking Attendance");
 
         column = date;
         table = subject+"-"+teacher;
+        new AsyncStart(Attendance.this,"startAT.inc.php");
     }
 
     // Triggers when LOGIN Button clicked
@@ -99,8 +111,6 @@ public class Attendance extends AppCompatActivity {
             }
         }
     }
-
-
 
     private class AsyncATList extends GlobalAsyncTask{
 
@@ -147,6 +157,7 @@ public class Attendance extends AppCompatActivity {
             }else if (result.equalsIgnoreCase("false")){
                 Toast.makeText(Attendance.this, "FALSE", Toast.LENGTH_LONG).show();
             }
+            mSwipeRefreshLayout.setRefreshing(false);
         }
     }
 

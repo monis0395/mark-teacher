@@ -41,6 +41,7 @@ public class AttendanceCheckList extends AppCompatActivity {
         Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
         String date = df.format(c.getTime());
+        setTitle("Mark Attendance");
 
         column = date;
         table = subject+"-"+teacher;

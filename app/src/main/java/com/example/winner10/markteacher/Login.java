@@ -1,5 +1,6 @@
 package com.example.winner10.markteacher;
 
+import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -131,13 +132,26 @@ public class Login extends AppCompatActivity {
             if(content.equalsIgnoreCase("application/json"))
 //            if(result.equalsIgnoreCase("true"))
             {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("username", username);
-                editor.apply();
+                try {
 
-                Intent intent = new Intent(Login.this,SuccessActivity.class);
-                startActivity(intent);
-                Login.this.finish();
+                    JSONArray jArray = new JSONArray(result);
+                    JSONObject json_data = jArray.getJSONObject(0);
+
+                    DailyPeriod periodData = new DailyPeriod();
+                    String userName = json_data.getString("name");
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("username", username);
+                    editor.putString("name", userName);
+                    editor.apply();
+
+                    Intent intent = new Intent(Login.this,SuccessActivity.class);
+                    startActivity(intent);
+                    Login.this.finish();
+
+                } catch (JSONException e) {
+                    Toast.makeText(Login.this, e.toString(), Toast.LENGTH_LONG).show();
+                }
+
 
             }else if (result.equalsIgnoreCase("false")){
                 Toast.makeText(Login.this, "Invalid email or password", Toast.LENGTH_LONG).show();
