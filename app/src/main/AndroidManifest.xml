@@ -32,6 +32,8 @@
             android:label="@string/title_activity_set_host"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".AttendanceCheckList" />
+        <activity android:name=".SubjectsActivity" />
+        <activity android:name=".ReportActivity"></activity>
     </application>
 
 </manifest>

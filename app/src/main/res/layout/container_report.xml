@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/textSutdent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="21dp"
+        android:text="Subject Name"
+        android:textSize="18sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="#bdbdbd"
+        android:layout_below="@+id/textSutdent"
+        android:layout_marginTop="20dp"
+        android:id="@+id/view" />
+
+    <TextView
+        android:id="@+id/textLA"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:text=""
+        android:layout_alignTop="@+id/textSutdent"
+        android:layout_toRightOf="@+id/textSutdent"
+        android:layout_toEndOf="@+id/textSutdent" />
+
+    <TextView
+        android:id="@+id/textLT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:text=""
+        android:layout_alignBaseline="@+id/textLA"
+        android:layout_alignBottom="@+id/textLA"
+        android:layout_toRightOf="@+id/textLA"
+        android:layout_toEndOf="@+id/textLA" />
+
+    <TextView
+        android:id="@+id/textNeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="20dp"
+        android:text=""
+        android:layout_alignBaseline="@+id/textLT"
+        android:layout_alignBottom="@+id/textLT"
+        android:layout_toRightOf="@+id/textLT"
+        android:layout_toEndOf="@+id/textLT" />
+
+    <TextView
+        android:id="@+id/textBunk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="16dp"
+        android:layout_alignBaseline="@+id/textNeed"
+        android:layout_alignBottom="@+id/textNeed"
+        android:layout_toRightOf="@+id/textNeed"
+        android:layout_toEndOf="@+id/textNeed" />
+
+</RelativeLayout>

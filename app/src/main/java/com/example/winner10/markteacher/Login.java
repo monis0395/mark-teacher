@@ -30,6 +30,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Set;
 
 public class Login extends AppCompatActivity {
 
@@ -52,12 +55,12 @@ public class Login extends AppCompatActivity {
         sr = ((StringRes)getApplicationContext());
         sharedPreferences = getSharedPreferences(MyPREFERENCES, Login.MODE_PRIVATE);
 
-        username = sharedPreferences.getString("username","");
-        if(!username.isEmpty()){
-            Intent intent = new Intent(Login.this,SuccessActivity.class);
-            startActivity(intent);
-            Login.this.finish();
-        }
+//        username = sharedPreferences.getString("username","");
+//        if(!username.isEmpty()){
+//            Intent intent = new Intent(Login.this,SuccessActivity.class);
+//            startActivity(intent);
+//            Login.this.finish();
+//        }
     }
 
     // Triggers when LOGIN Button clicked
@@ -68,7 +71,7 @@ public class Login extends AppCompatActivity {
         password = etPassword.getText().toString();
 
         // Initialize  AsyncLogin() class with email and password
-        new AysnchLogin(Login.this,"login.inc.php");
+        new AysnchLogin(Login.this,"teacherLogin.inc.php");
 
     }
 
@@ -136,6 +139,34 @@ public class Login extends AppCompatActivity {
 
                     JSONArray jArray = new JSONArray(result);
                     JSONObject json_data = jArray.getJSONObject(0);
+                    String subjectName, className;
+                    String[] value;
+
+//                    Iterator<String> iter = json_data.keys();
+//                    while (iter.hasNext()) {
+//                        String key = iter.next();
+//                        try {
+//                            subjectName = json_data.getString(key);
+////                            sr.addSubject(subjectName);
+//                            Toast.makeText(Login.this, "key: "+key+"\nsubjectName: "+subjectName, Toast.LENGTH_SHORT).show();
+//                        } catch (JSONException e) {
+//                            // Something went wrong!
+//                            Toast.makeText(Login.this, "JSON KEYS\n"+e.toString(), Toast.LENGTH_LONG).show();
+//                        }
+//                    }
+                    for(int i=1;i<10;i++){
+                        value = json_data.getString("subject"+i).split("[.]");
+                        if(!value[0].isEmpty()){
+                            Subjects subjects =  new Subjects();
+                            subjectName = value[0];
+                            className = value[1];
+//                            Toast.makeText(Login.this,"subjectName:"+subjectName+" className: "+className, Toast.LENGTH_SHORT).show();
+                            subjects.subjectName = subjectName;
+                            subjects.className = className;
+                            sr.addSubject(subjects);
+                        }
+                    }
+//                    Toast.makeText(Login.this, "list: "+Arrays.toString(sr.getSubjects().toArray()), Toast.LENGTH_LONG).show();
 
                     DailyPeriod periodData = new DailyPeriod();
                     String userName = json_data.getString("name");
