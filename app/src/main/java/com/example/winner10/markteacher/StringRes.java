@@ -12,7 +12,7 @@ import java.util.List;
 
 public class StringRes  extends Application {
 
-    private String HOSTNAME= "http://192.168.0.105/mark_demo/";
+    private String HOSTNAME= "http://192.168.0.103/mark_php/";
     private List<Subjects> subjects=new ArrayList<>();
 
     public void setHOSTNAME(String HOSTNAME) {
