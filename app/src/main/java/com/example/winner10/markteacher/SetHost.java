@@ -35,7 +35,6 @@ public class SetHost extends AppCompatActivity {
     }
 
     public void setHost(View arg0) {
-
         // Get text from email and passord field
         HOSTNAME = hostname.getText().toString();
         StringRes sr = ((StringRes)getApplicationContext());

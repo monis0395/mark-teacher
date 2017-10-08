@@ -1,16 +1,8 @@
 package com.example.winner10.markteacher;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,62 +12,34 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import android.util.Log;
 
 
-public class SuccessActivity extends AppCompatActivity
+public class DailyPeriodActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private StringRes sr;
-    private String username, name;
-    private RecyclerView dailyPeriodRecycler;
-    private AdapterDailyPeriod mAdapter;
     TextView nav_username, nav_user;
-    public SharedPreferences sharedPreferences;
-    public static final String MyPREFERENCES = "MyPrefs";
     Context self;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_success);
+        self = DailyPeriodActivity.this;
         setTitle("Today");
-        self = SuccessActivity.this;
+        sideNavInit();
 
-        sideNavinit();
-
-        new AsyncFetch(SuccessActivity.this, "daily.php");
-
+        new AsyncFetch(self, "daily.php");
     }
 
-    void sideNavinit() {
+    void sideNavInit() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -118,13 +82,13 @@ public class SuccessActivity extends AppCompatActivity
 
                 DailyPeriod dp = new DailyPeriod();
 
-                mAdapter = new AdapterDailyPeriod(SuccessActivity.this, dp.parseList(jArray));
-                dailyPeriodRecycler = (RecyclerView) findViewById(R.id.dailyPeriod);
+                AdapterDailyPeriod mAdapter = new AdapterDailyPeriod(DailyPeriodActivity.this, dp.parseList(jArray));
+                RecyclerView dailyPeriodRecycler = (RecyclerView) findViewById(R.id.dailyPeriod);
                 dailyPeriodRecycler.setAdapter(mAdapter);
-                dailyPeriodRecycler.setLayoutManager(new LinearLayoutManager(SuccessActivity.this));
+                dailyPeriodRecycler.setLayoutManager(new LinearLayoutManager(DailyPeriodActivity.this));
 
             } catch (JSONException e) {
-                Toast.makeText(SuccessActivity.this, e.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(DailyPeriodActivity.this, e.toString(), Toast.LENGTH_LONG).show();
             }
         }
 
@@ -176,7 +140,7 @@ public class SuccessActivity extends AppCompatActivity
             // Handle the camera action
 
         } else if (id == R.id.nav_report) {
-            Intent intent = new Intent(SuccessActivity.this, SubjectsActivity.class);
+            Intent intent = new Intent(DailyPeriodActivity.this, SubjectsActivity.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_slideshow) {
@@ -195,9 +159,9 @@ public class SuccessActivity extends AppCompatActivity
             UserDetails ud = new UserDetails(self);
             ud.clearDetails();
 
-            Intent intent = new Intent(SuccessActivity.this, Login.class);
+            Intent intent = new Intent(DailyPeriodActivity.this, Login.class);
             startActivity(intent);
-            SuccessActivity.this.finish();
+            DailyPeriodActivity.this.finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

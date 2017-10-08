@@ -19,27 +19,20 @@ public class AdapterDailyPeriod extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private Context context;
     private LayoutInflater inflater;
-    List<DailyPeriod> data= Collections.emptyList();
-    DailyPeriod current;
-    int currentPos=0;
-    public static String HOSTNAME;
-    public String current_location;
-    public String current_subjectName;
-    public String current_teacherName;
+    List<DailyPeriod> data = Collections.emptyList();
 
-    // create constructor to innitilize context and data sent from Login
-    public AdapterDailyPeriod(Context context, List<DailyPeriod> data){
-        this.context=context;
-        inflater= LayoutInflater.from(context);
-        this.data=data;
+    public AdapterDailyPeriod(Context context, List<DailyPeriod> data) {
+        this.context = context;
+        inflater = LayoutInflater.from(context);
+
+        this.data = data;
         StringRes sr = new StringRes();
-        HOSTNAME = context.getString(R.string.hostname);
     }
 
     // Inflate the layout when viewholder created
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view=inflater.inflate(R.layout.container_daily, parent,false);
+        View view = inflater.inflate(R.layout.container_daily, parent, false);
         MyHolder holder = new MyHolder(view);
         return holder;
     }
@@ -48,31 +41,24 @@ public class AdapterDailyPeriod extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
 
-        // Get current position of item in recyclerview to bind data and assign values from list
-        MyHolder myHolder= (MyHolder) holder;
-        DailyPeriod current=data.get(position);
+        MyHolder myHolder = (MyHolder) holder;
+        final DailyPeriod current = data.get(position);
+
         myHolder.textSubjectName.setText(current.subname);
         myHolder.textTeacherName.setText(" - " + current.tname);
         myHolder.textTime.setText(current.START + " - " + current.END);
         myHolder.textLocation.setText(current.location);
-        current_location = current.location;
-        current_subjectName = current.subname;
-        current_teacherName = current.tname;
-        final String current_did = current.did;
-        final DailyPeriod passsdata = current;
+
         myHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Your code
-                Intent intent = new Intent(context,Attendance.class);
-                intent.putExtra("subjectName",passsdata.subname);
-                intent.putExtra("teacherName",passsdata.tname);
+                Intent intent = new Intent(context, Attendance.class);
+                intent.putExtra("currentPeriod", current);
                 context.startActivity(intent);
             }
         });
     }
 
-    // return total item from List
     @Override
     public int getItemCount() {
         return data.size();
@@ -88,7 +74,7 @@ public class AdapterDailyPeriod extends RecyclerView.Adapter<RecyclerView.ViewHo
         // create constructor to get widget reference
         public MyHolder(View itemView) {
             super(itemView);
-            textSubjectName= (TextView) itemView.findViewById(R.id.textSubjectName);
+            textSubjectName = (TextView) itemView.findViewById(R.id.textSubjectName);
             textTeacherName = (TextView) itemView.findViewById(R.id.textTeacherName);
             textTime = (TextView) itemView.findViewById(R.id.textTime);
             textLocation = (TextView) itemView.findViewById(R.id.textLocation);

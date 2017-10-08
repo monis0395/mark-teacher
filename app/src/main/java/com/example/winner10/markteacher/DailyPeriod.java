@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,26 +12,8 @@ import java.util.List;
  * Created by Winner 10 on 4/6/2017.
  */
 
-class DailyPeriod {
+class DailyPeriod implements Serializable {
     String did, clid, subid, tid, subname, tname, subtype, START, END, location, batchid, cname, subsemester, cid, access;
-
-    /*{
-        "did": "16",
-            "clid": "1",
-            "subid": "1",
-            "tid": "1",
-            "subname": "ENTERPRISE RESOURCE PLANNING",
-            "tname": "Arjun Jaiswal",
-            "subtype": "lecture",
-            "START": "11:00:00",
-            "END": "12:00:00",
-            "location": "61",
-            "batchid": "0",
-            "cname": "Information Technology",
-            "subsemester": "8",
-            "cid": "1",
-            "access": "0"
-    }*/
 
     DailyPeriod parseObject(JSONObject data) throws JSONException {
         DailyPeriod period = new DailyPeriod();

@@ -1,16 +1,12 @@
 package com.example.winner10.markteacher;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
-import android.content.Intent;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -19,11 +15,8 @@ import org.json.JSONObject;
 
 public class Login extends AppCompatActivity {
 
-    private EditText etEmail;
-    private EditText etPassword;
-    StringRes sr;
-    private String username;
-    private String password;
+    private EditText etEmail, etPassword;
+    private String username, password;
     Context self;
 
     @Override
@@ -34,7 +27,6 @@ public class Login extends AppCompatActivity {
 
         etEmail = (EditText) findViewById(R.id.username);
         etPassword = (EditText) findViewById(R.id.password);
-        sr = ((StringRes) getApplicationContext());
 
         UserDetails ud = new UserDetails(self);
         if (ud.islogedIn()) {
@@ -44,7 +36,7 @@ public class Login extends AppCompatActivity {
     }
 
     void statSuccessActivity() {
-        Intent intent = new Intent(self, SuccessActivity.class);
+        Intent intent = new Intent(self, DailyPeriodActivity.class);
         startActivity(intent);
         Login.this.finish();
     }
