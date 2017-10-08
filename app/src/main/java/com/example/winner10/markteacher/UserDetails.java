@@ -11,7 +11,7 @@ import org.json.JSONObject;
  */
 
 public class UserDetails {
-    public static String uid, pid, userid, name, cname, cid;
+    public static String uid, tid, teacherid, tname, cname, cid;
     Context context;
 
     UserDetails(Context context) {
@@ -21,9 +21,9 @@ public class UserDetails {
     void setValues(JSONObject obj) {
         try {
             uid = obj.getString("uid");
-            pid = obj.getString("tid");
-            userid = obj.getString("teacherid");
-            name = obj.getString("tname");
+            tid = obj.getString("tid");
+            teacherid = obj.getString("teacherid");
+            tname = obj.getString("tname");
             cname = obj.getString("cname");
             cid = obj.getString("cid");
         } catch (JSONException e) {
@@ -54,5 +54,11 @@ public class UserDetails {
         String userDetails = sp.getString("useDetails","");
 
         return !userDetails.isEmpty();
+    }
+    void clearDetails(){
+        SharedPreferences sp = context.getSharedPreferences("MarkUserDetails", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.clear();
+        editor.apply();
     }
 }

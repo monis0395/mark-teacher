@@ -38,14 +38,12 @@ public class Login extends AppCompatActivity {
 
         UserDetails ud = new UserDetails(self);
         if (ud.islogedIn()) {
-            statSuccessActivity();
-        } else {
             ud.refreshValuesFromSP();
+            statSuccessActivity();
         }
     }
 
     void statSuccessActivity() {
-
         Intent intent = new Intent(self, SuccessActivity.class);
         startActivity(intent);
         Login.this.finish();
@@ -58,37 +56,8 @@ public class Login extends AppCompatActivity {
         new AysnchLogin(self, "login.php");
     }
 
-    public void changeHost(View arg0) {
-
-        // get prompts.xml view
-        LayoutInflater li = LayoutInflater.from(self);
-        View promptsView = li.inflate(R.layout.prompts, null);
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(self);
-
-        // set prompts.xml to alertdialog builder
-        alertDialogBuilder.setView(promptsView);
-        final EditText userInput = (EditText) promptsView.findViewById(R.id.editTextDialogUserInput);
-
-        // set dialog message
-        alertDialogBuilder.setCancelable(false)
-                .setPositiveButton("OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                sr.setHOSTNAME(userInput.getText().toString());// get user input and set it to result
-                                Toast.makeText(self, "HOST set successfully!", Toast.LENGTH_LONG).show();
-                            }
-                        })
-                .setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-        // create alert dialog
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
+    public void changeHost(View args0) {
+        Util.changeHost(self);
     }
 
     private class AysnchLogin extends GlobalAsyncTask {
@@ -102,7 +71,6 @@ public class Login extends AppCompatActivity {
         public Uri.Builder urlBuilder() {
             return new Uri.Builder()
                     .appendQueryParameter("userid", username)
-                    .appendQueryParameter("type", "1")
                     .appendQueryParameter("password", password);
         }
 

@@ -29,9 +29,11 @@ import android.os.AsyncTask;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -44,6 +46,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
 import android.util.Log;
 
 
@@ -52,19 +55,29 @@ public class SuccessActivity extends AppCompatActivity
 
     private StringRes sr;
     private String username, name;
-    private RecyclerView dailyPeriod;
+    private RecyclerView dailyPeriodRecycler;
     private AdapterDailyPeriod mAdapter;
     TextView nav_username, nav_user;
     public SharedPreferences sharedPreferences;
-    public static final String MyPREFERENCES = "MyPrefs" ;
+    public static final String MyPREFERENCES = "MyPrefs";
+    Context self;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_success);
+        setTitle("Today");
+        self = SuccessActivity.this;
+
+        sideNavinit();
+
+        new AsyncFetch(SuccessActivity.this, "daily.php");
+
+    }
+
+    void sideNavinit() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -77,68 +90,38 @@ public class SuccessActivity extends AppCompatActivity
         View nav_header = navigationView.getHeaderView(0);
         nav_username = (TextView) nav_header.findViewById(R.id.username);
         nav_user = (TextView) nav_header.findViewById(R.id.user);
-        setTitle("Today");
-
-//        initialize variables
-        sharedPreferences = getSharedPreferences(MyPREFERENCES, Login.MODE_PRIVATE);
-        username = sharedPreferences.getString("username","");
-        name = sharedPreferences.getString("name","");
-        nav_username.setText(username);
-        nav_user.setText(name);
-
-        sr = ((StringRes)getApplicationContext());
-        new AsyncFetch(SuccessActivity.this,"tdailyPeriod.inc.php");
-
+        nav_username.setText(UserDetails.teacherid);
+        nav_user.setText(UserDetails.tname);
     }
 
-    private class AsyncFetch extends GlobalAsyncTask{
+    private class AsyncFetch extends GlobalAsyncTask {
 
-        AsyncFetch(Context context, String url){
-            super(context,url);
+        AsyncFetch(Context context, String url) {
+            super(context, url);
             execute();
         }
 
         @Override
         public Uri.Builder urlBuilder() {
-            return new Uri.Builder()
-                    .appendQueryParameter("tsap", username);
+            return new Uri.Builder().appendQueryParameter("tid", UserDetails.tid);
         }
 
         @Override
         public void goPostExecute(String result, String content) {
 
-            List<DailyPeriod> data=new ArrayList<>();
             try {
-
                 JSONArray jArray = new JSONArray(result);
 
                 TextView textPeriod;
-                textPeriod= (TextView) findViewById(R.id.textPeriod);
-                textPeriod.setText("/ "+jArray.length()+"");
+                textPeriod = (TextView) findViewById(R.id.textPeriod);
+                textPeriod.setText("/ " + jArray.length() + "");
 
-                // Extract data from json and store into ArrayList as class objects
-                for(int i=0;i<jArray.length();i++){
-                    JSONObject json_data = jArray.getJSONObject(i);
-                    DailyPeriod periodData = new DailyPeriod();
+                DailyPeriod dp = new DailyPeriod();
 
-                    periodData.did = json_data.getString("did");
-                    periodData.subjectName= json_data.getString("Subject");
-                    periodData.teacherName= json_data.getString("Teacher");
-
-                    String tstart = json_data.getString("Time Start");
-                    String tend = json_data.getString("Time End");
-
-                    periodData.startTime= tstart.substring(0,tstart.length()-7);
-                    periodData.endTime = tend.substring(0,tend.length()-7);
-                    periodData.location = json_data.getString("location");
-                    data.add(periodData);
-                }
-
-                // Setup and Handover data to recyclerview
-                dailyPeriod = (RecyclerView)findViewById(R.id.dailyPeriod);
-                mAdapter = new AdapterDailyPeriod(SuccessActivity.this, data);
-                dailyPeriod.setAdapter(mAdapter);
-                dailyPeriod.setLayoutManager(new LinearLayoutManager(SuccessActivity.this));
+                mAdapter = new AdapterDailyPeriod(SuccessActivity.this, dp.parseList(jArray));
+                dailyPeriodRecycler = (RecyclerView) findViewById(R.id.dailyPeriod);
+                dailyPeriodRecycler.setAdapter(mAdapter);
+                dailyPeriodRecycler.setLayoutManager(new LinearLayoutManager(SuccessActivity.this));
 
             } catch (JSONException e) {
                 Toast.makeText(SuccessActivity.this, e.toString(), Toast.LENGTH_LONG).show();
@@ -192,9 +175,8 @@ public class SuccessActivity extends AppCompatActivity
         } else if (id == R.id.nav_camera) {
             // Handle the camera action
 
-
         } else if (id == R.id.nav_report) {
-            Intent intent = new Intent(SuccessActivity.this,SubjectsActivity.class);
+            Intent intent = new Intent(SuccessActivity.this, SubjectsActivity.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_slideshow) {
@@ -202,61 +184,20 @@ public class SuccessActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_changeHost) {
 
-            // get prompts.xml view
-            LayoutInflater li = LayoutInflater.from(SuccessActivity.this);
-            View promptsView = li.inflate(R.layout.prompts, null);
-
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                    SuccessActivity.this);
-
-            // set prompts.xml to alertdialog builder
-            alertDialogBuilder.setView(promptsView);
-
-            final EditText userInput = (EditText) promptsView
-                    .findViewById(R.id.editTextDialogUserInput);
-
-            // set dialog message
-            alertDialogBuilder
-                    .setCancelable(false)
-                    .setPositiveButton("OK",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog,int id) {
-                                    // get user input and set it to result
-                                    // edit text
-                                    sr.setHOSTNAME(userInput.getText().toString());
-                                    Toast.makeText(SuccessActivity.this,"HOST set successfully!",Toast.LENGTH_LONG).show();
-                                }
-                            })
-                    .setNegativeButton("Cancel",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog,int id) {
-                                    dialog.cancel();
-                                }
-                            });
-
-            // create alert dialog
-            AlertDialog alertDialog = alertDialogBuilder.create();
-
-            // show it
-            alertDialog.show();
-//            Intent intent = new Intent(SuccessActivity.this,SetHost.class);
-//            startActivity(intent);
-
+            Util.changeHost(self);
 
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
 
 
-        }else if (id == R.id.nav_logout) {
+        } else if (id == R.id.nav_logout) {
+            UserDetails ud = new UserDetails(self);
+            ud.clearDetails();
 
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.clear();
-            editor.commit();
-            Intent intent = new Intent(SuccessActivity.this,Login.class);
+            Intent intent = new Intent(SuccessActivity.this, Login.class);
             startActivity(intent);
             SuccessActivity.this.finish();
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

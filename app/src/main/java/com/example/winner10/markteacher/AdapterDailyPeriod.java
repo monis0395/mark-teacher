@@ -51,13 +51,13 @@ public class AdapterDailyPeriod extends RecyclerView.Adapter<RecyclerView.ViewHo
         // Get current position of item in recyclerview to bind data and assign values from list
         MyHolder myHolder= (MyHolder) holder;
         DailyPeriod current=data.get(position);
-        myHolder.textSubjectName.setText(current.subjectName);
-        myHolder.textTeacherName.setText(" - " + current.teacherName);
-        myHolder.textTime.setText(current.startTime + " - " + current.endTime);
+        myHolder.textSubjectName.setText(current.subname);
+        myHolder.textTeacherName.setText(" - " + current.tname);
+        myHolder.textTime.setText(current.START + " - " + current.END);
         myHolder.textLocation.setText(current.location);
         current_location = current.location;
-        current_subjectName = current.subjectName;
-        current_teacherName = current.teacherName;
+        current_subjectName = current.subname;
+        current_teacherName = current.tname;
         final String current_did = current.did;
         final DailyPeriod passsdata = current;
         myHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -65,8 +65,8 @@ public class AdapterDailyPeriod extends RecyclerView.Adapter<RecyclerView.ViewHo
             public void onClick(View v) {
                 //Your code
                 Intent intent = new Intent(context,Attendance.class);
-                intent.putExtra("subjectName",passsdata.subjectName);
-                intent.putExtra("teacherName",passsdata.teacherName);
+                intent.putExtra("subjectName",passsdata.subname);
+                intent.putExtra("teacherName",passsdata.tname);
                 context.startActivity(intent);
             }
         });
