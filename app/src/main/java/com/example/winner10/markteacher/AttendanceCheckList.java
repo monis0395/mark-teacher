@@ -1,5 +1,6 @@
 package com.example.winner10.markteacher;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,69 +21,79 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class AttendanceCheckList extends AppCompatActivity {
 
-    public String subject;
-    public String teacher;
-    public String column;
-    public String table;
-    private RecyclerView attendanceList;
-    private AdapterAttendanceCheckList mAdapter;
+    DailyPeriod currentPeriod;
+    Context self;
+    String date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendance_check_list);
-
-        subject = getIntent().getStringExtra("subjectName");
-        teacher = getIntent().getStringExtra("teacherName");
-
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
-        String date = df.format(c.getTime());
         setTitle("Mark Attendance");
+        init();
 
-        column = date;
-        table = subject+"-"+teacher;
-        new AsyncATList(AttendanceCheckList.this,"returnAT.inc.php");
+        new AsyncATList(self, "getATRecords.php");
     }
 
-    private class AsyncATList extends GlobalAsyncTask{
+    void init() {
+        self = AttendanceCheckList.this;
+        currentPeriod = (DailyPeriod) getIntent().getSerializableExtra("currentPeriod");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        date = df.format(Calendar.getInstance().getTime());
+    }
 
-        AsyncATList(Context context, String url){
-            super(context,url);
+    @Override
+    public void onBackPressed() {
+        new android.app.AlertDialog.Builder(self)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Closing Activity")
+                .setMessage("Are you sure you want to exit from taking attendance?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        new AsyncDeleteAT(self, "deleteAT.php");
+                        ((Activity) self).finish();
+                    }
+
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    private class AsyncATList extends GlobalAsyncTask {
+
+        AsyncATList(Context context, String url) {
+            super(context, url);
             execute();
         }
 
         @Override
         public Uri.Builder urlBuilder() {
             return new Uri.Builder()
-                    .appendQueryParameter("column", column)
-                    .appendQueryParameter("table", table);
+                    .appendQueryParameter("batchid", currentPeriod.batchid)
+                    .appendQueryParameter("clid", currentPeriod.clid)
+                    .appendQueryParameter("subid", currentPeriod.subid)
+                    .appendQueryParameter("tid", currentPeriod.tid)
+                    .appendQueryParameter("start", currentPeriod.START)
+                    .appendQueryParameter("did", currentPeriod.did)
+                    .appendQueryParameter("date", date);
         }
 
         @Override
-        public void goPostExecute(String result,String content) {
+        public void goPostExecute(String result, String content) {
 
-            if(content.equalsIgnoreCase("application/json")) {
-                List<AttendanceList> data=new ArrayList<>();
+            if (content.equalsIgnoreCase("application/json")) {
                 try {
                     JSONArray jArray = new JSONArray(result);
+                    AttendanceList sd = new AttendanceList();
 
-                    // Extract data from json and store into ArrayList as class objects
-                    for(int i=0;i<jArray.length();i++){
-                        JSONObject json_data = jArray.getJSONObject(i);
-                        AttendanceList studentData = new AttendanceList();
-
-                        studentData.sap = json_data.getString("student");
-                        studentData.status= json_data.getString("status");
-                        data.add(studentData);
-                    }
-
-                    // Setup and Handover data to recyclerview
-                    attendanceList = (RecyclerView)findViewById(R.id.studentsCheckList);
-                    mAdapter = new AdapterAttendanceCheckList(AttendanceCheckList.this, data, column, table);
+                    AdapterAttendanceCheckList mAdapter = new AdapterAttendanceCheckList(self, sd.parseStudentList(jArray));
+                    RecyclerView attendanceList = (RecyclerView) findViewById(R.id.studentsCheckList);
                     attendanceList.setAdapter(mAdapter);
                     attendanceList.setLayoutManager(new LinearLayoutManager(AttendanceCheckList.this));
 
@@ -90,58 +101,42 @@ public class AttendanceCheckList extends AppCompatActivity {
                     Toast.makeText(AttendanceCheckList.this, e.toString(), Toast.LENGTH_LONG).show();
                 }
 
-            }else if (result.equalsIgnoreCase("false")){
+            } else if (result.equalsIgnoreCase("false")) {
                 Toast.makeText(AttendanceCheckList.this, "FALSE", Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    public void deleteAT(View arg0) {
+    class AsyncDeleteAT extends GlobalAsyncTask {
 
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
-                        //Yes button clicked
-                        new AsyncDeleteAT(AttendanceCheckList.this,"deleteAT.inc.php");
-                        break;
-
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        //No button clicked
-                        break;
-                }
-            }
-        };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(AttendanceCheckList.this);
-        builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
-    }
-
-    private class AsyncDeleteAT extends GlobalAsyncTask{
-
-        AsyncDeleteAT(Context context, String url){
-            super(context,url);
+        AsyncDeleteAT(Context context, String url) {
+            super(context, url);
             execute();
         }
 
         @Override
         public Uri.Builder urlBuilder() {
             return new Uri.Builder()
-                    .appendQueryParameter("column", column)
-                    .appendQueryParameter("table", table);
+                    .appendQueryParameter("batchid", currentPeriod.batchid)
+                    .appendQueryParameter("clid", currentPeriod.clid)
+                    .appendQueryParameter("subid", currentPeriod.subid)
+                    .appendQueryParameter("tid", currentPeriod.tid)
+                    .appendQueryParameter("start", currentPeriod.START)
+                    .appendQueryParameter("date", date);
         }
 
         @Override
-        public void goPostExecute(String result,String content) {
-            Toast.makeText(AttendanceCheckList.this, "Deleted Attendance", Toast.LENGTH_LONG).show();
-            finish();
+        public void goPostExecute(String result, String content) {
+
+            if (result.equalsIgnoreCase("success")) {
+                Toast.makeText(self, "Attendance deleted", Toast.LENGTH_LONG).show();
+            } else if (result.equalsIgnoreCase("failed")) {
+                Toast.makeText(self, "Failed to delete Attendance", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
     public void confirmAt(View arg0) {
-        Toast.makeText(AttendanceCheckList.this,"Attendance saved",Toast.LENGTH_LONG).show();
-        finish();
+        Util.closeActivityAlert("Are you sure you want to submit attendance?", self);
     }
 }

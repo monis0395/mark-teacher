@@ -23,8 +23,8 @@
         android:layout_marginLeft="11dp"
         android:layout_marginStart="11dp"
         android:layout_marginTop="15dp"
-        android:textSize="20dp"
-        android:textColor="@color/WhiteSmoke"
+        android:textSize="18sp"
+        android:textColor="@color/Black"
         android:text="60003130014" />
 
 </RelativeLayout>

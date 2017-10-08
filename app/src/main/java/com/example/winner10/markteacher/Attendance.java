@@ -1,6 +1,9 @@
 package com.example.winner10.markteacher;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -55,7 +58,20 @@ public class Attendance extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Util.closeActivityAlert("Are you sure you want to exit from taking attendance?", self);
+        new AlertDialog.Builder(self)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Closing Activity")
+                .setMessage("Are you sure you want to exit from taking attendance?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        new AsyncDeleteAT(self, "deleteAT.php");
+                        ((Activity) self).finish();
+                    }
+
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
 
     public void stopAt(View arg0) {
@@ -101,10 +117,57 @@ public class Attendance extends AppCompatActivity {
                     Toast.makeText(self, e.toString(), Toast.LENGTH_LONG).show();
                 }
 
+            } else if (result.equalsIgnoreCase("attendance already present")) {
+                new AlertDialog.Builder(self)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Closing Activity")
+                        .setMessage("Attendance has been taken earlier, do wish to take again?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                new AsyncStartAT(self, "getATRecords.php");
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ((Activity) self).finish();
+                            }
+                        })
+                        .show();
             } else if (result.equalsIgnoreCase("No records found")) {
                 Toast.makeText(self, "No Students Found", Toast.LENGTH_LONG).show();
             }
             mSwipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
+    class AsyncDeleteAT extends GlobalAsyncTask {
+
+        AsyncDeleteAT(Context context, String url) {
+            super(context, url);
+            execute();
+        }
+
+        @Override
+        public Uri.Builder urlBuilder() {
+            return new Uri.Builder()
+                    .appendQueryParameter("batchid", currentPeriod.batchid)
+                    .appendQueryParameter("clid", currentPeriod.clid)
+                    .appendQueryParameter("subid", currentPeriod.subid)
+                    .appendQueryParameter("tid", currentPeriod.tid)
+                    .appendQueryParameter("start", currentPeriod.START)
+                    .appendQueryParameter("date", date);
+        }
+
+        @Override
+        public void goPostExecute(String result, String content) {
+
+            if (result.equalsIgnoreCase("success")) {
+                Toast.makeText(self, "Attendance deleted", Toast.LENGTH_LONG).show();
+            } else if (result.equalsIgnoreCase("failed")) {
+                Toast.makeText(self, "Failed to delete Attendance", Toast.LENGTH_LONG).show();
+            }
         }
     }
 

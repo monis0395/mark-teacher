@@ -22,9 +22,8 @@
         android:layout_marginLeft="18dp"
         android:layout_marginStart="18dp"
         android:layout_marginTop="20dp"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        android:textColor="@color/White"
+        android:textSize="18sp"
+        android:textColor="@color/Black"
         android:text="60003130014" />
 
     <TextView
@@ -32,8 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="present"
-        android:textSize="20dp"
-        android:textStyle="bold"
+        android:textSize="16sp"
         android:textColor="@color/PaleTurquoise"
         android:layout_above="@+id/view"
         android:layout_alignParentRight="true"
