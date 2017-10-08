@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="http://192.168.0.103/mark_demo/"
+        android:text="http://192.168.0.103/mark_php/"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/textView3"
         android:layout_alignParentLeft="true"
