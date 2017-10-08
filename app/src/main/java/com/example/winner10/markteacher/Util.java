@@ -1,5 +1,6 @@
 package com.example.winner10.markteacher;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,6 +21,22 @@ public class Util {
                 .setCancelable(true);
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    static void closeActivityAlert(String msg, final Context context){
+        new AlertDialog.Builder(context)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Closing Activity")
+                .setMessage(msg)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ((Activity) context).finish();
+                    }
+
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
 
     static void changeHost(final Context context) {
