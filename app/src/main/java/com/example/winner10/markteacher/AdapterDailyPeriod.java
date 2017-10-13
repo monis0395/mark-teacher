@@ -3,6 +3,8 @@ package com.example.winner10.markteacher;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,14 +51,19 @@ public class AdapterDailyPeriod extends RecyclerView.Adapter<RecyclerView.ViewHo
         myHolder.textTime.setText(current.START + " - " + current.END);
         myHolder.textLocation.setText(current.location);
 
-        myHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, Attendance.class);
-                intent.putExtra("currentPeriod", current);
-                context.startActivity(intent);
-            }
-        });
+        if(!current.access.equalsIgnoreCase("2")){
+            myHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, Attendance.class);
+                    intent.putExtra("currentPeriod", current);
+                    context.startActivity(intent);
+                }
+            });
+        }else {
+            myHolder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.LightGrey));
+        }
+
     }
 
     @Override

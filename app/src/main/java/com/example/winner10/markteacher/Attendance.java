@@ -36,6 +36,7 @@ public class Attendance extends AppCompatActivity {
 
         init();
         new AsyncStartAT(self, "getStudents.php");
+        new AsyncSetATAccess(self, currentPeriod, "1");
     }
 
     void init() {
@@ -65,8 +66,7 @@ public class Attendance extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        new AsyncDeleteAT(self, "deleteAT.php");
-                        ((Activity) self).finish();
+                        new AsyncDeleteAT(self, currentPeriod, date);
                     }
 
                 })
@@ -139,35 +139,6 @@ public class Attendance extends AppCompatActivity {
                 Toast.makeText(self, "No Students Found", Toast.LENGTH_LONG).show();
             }
             mSwipeRefreshLayout.setRefreshing(false);
-        }
-    }
-
-    class AsyncDeleteAT extends GlobalAsyncTask {
-
-        AsyncDeleteAT(Context context, String url) {
-            super(context, url);
-            execute();
-        }
-
-        @Override
-        public Uri.Builder urlBuilder() {
-            return new Uri.Builder()
-                    .appendQueryParameter("batchid", currentPeriod.batchid)
-                    .appendQueryParameter("clid", currentPeriod.clid)
-                    .appendQueryParameter("subid", currentPeriod.subid)
-                    .appendQueryParameter("tid", currentPeriod.tid)
-                    .appendQueryParameter("start", currentPeriod.START)
-                    .appendQueryParameter("date", date);
-        }
-
-        @Override
-        public void goPostExecute(String result, String content) {
-
-            if (result.equalsIgnoreCase("success")) {
-                Toast.makeText(self, "Attendance deleted", Toast.LENGTH_LONG).show();
-            } else if (result.equalsIgnoreCase("failed")) {
-                Toast.makeText(self, "Failed to delete Attendance", Toast.LENGTH_LONG).show();
-            }
         }
     }
 

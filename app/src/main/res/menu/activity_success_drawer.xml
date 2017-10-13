@@ -4,36 +4,28 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_today"
-            android:icon="@drawable/ic_today_black_24dp"
             android:title="Today" />
         <item
             android:id="@+id/nav_report"
-            android:icon="@drawable/ic_menu_gallery"
             android:title="Reports" />
         <item
             android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
             android:title="Old Lecture" />
         <item
             android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
             android:title="Change Lecture timings" />
         <item
             android:id="@+id/nav_changeHost"
-            android:icon="@drawable/ic_menu_manage"
             android:title="Change Host" />
         <item
             android:id="@+id/nav_share"
-            android:icon="@drawable/ic_menu_share"
             android:title="Other Subject Attendance" />
         <item
             android:id="@+id/nav_send"
-            android:icon="@drawable/ic_menu_send"
             android:title="Add Lecture" />
         <item
             android:id="@+id/nav_logout"
-            android:icon="@drawable/ic_exit_to_app_black_24dp"
-            android:title="Logout" />
+            android:title="Logout"/>
     </group>
 
 

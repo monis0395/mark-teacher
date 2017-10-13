@@ -1,7 +1,9 @@
 package com.example.winner10.markteacher;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -35,6 +37,9 @@ public class DailyPeriodActivity extends AppCompatActivity
         self = DailyPeriodActivity.this;
         setTitle("Today");
         sideNavInit();
+
+        UserDetails ud = new UserDetails(self);
+        ud.refreshValuesFromSP();
 
         new AsyncFetch(self, "daily.php");
     }
@@ -91,9 +96,9 @@ public class DailyPeriodActivity extends AppCompatActivity
                 Toast.makeText(DailyPeriodActivity.this, e.toString(), Toast.LENGTH_LONG).show();
             }
         }
-
     }
 
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -113,12 +118,8 @@ public class DailyPeriodActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -133,7 +134,6 @@ public class DailyPeriodActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_today) {
-            // Handle the camera action
             setTitle("Today");
 
         } else if (id == R.id.nav_camera) {
@@ -147,10 +147,11 @@ public class DailyPeriodActivity extends AppCompatActivity
 
 
         } else if (id == R.id.nav_changeHost) {
-
             Util.changeHost(self);
 
         } else if (id == R.id.nav_share) {
+            Intent intent = new Intent(DailyPeriodActivity.this, OthersDailyPeriodActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_send) {
 

@@ -31,11 +31,11 @@ public class Login extends AppCompatActivity {
         UserDetails ud = new UserDetails(self);
         if (ud.islogedIn()) {
             ud.refreshValuesFromSP();
-            statSuccessActivity();
+            statDailyPeriodActivity();
         }
     }
 
-    void statSuccessActivity() {
+    void statDailyPeriodActivity() {
         Intent intent = new Intent(self, DailyPeriodActivity.class);
         startActivity(intent);
         Login.this.finish();
@@ -78,7 +78,7 @@ public class Login extends AppCompatActivity {
                     ud.setValues(userObject);
                     ud.setValuesInSP(userObject);
                     Toast.makeText(self, "Login success", Toast.LENGTH_LONG).show();
-                    statSuccessActivity();
+                    statDailyPeriodActivity();
                 } catch (JSONException e) {
                     Toast.makeText(self, e.toString(), Toast.LENGTH_LONG).show();
                 }

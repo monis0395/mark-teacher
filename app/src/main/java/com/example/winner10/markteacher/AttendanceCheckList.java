@@ -36,6 +36,7 @@ public class AttendanceCheckList extends AppCompatActivity {
         setTitle("Mark Attendance");
         init();
 
+        new AsyncSetATAccess(self, currentPeriod, "0");
         new AsyncATList(self, "getATRecords.php");
     }
 
@@ -55,9 +56,7 @@ public class AttendanceCheckList extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
-                        new AsyncDeleteAT(self, "deleteAT.php");
-                        ((Activity) self).finish();
+                        new AsyncDeleteAT(self, currentPeriod, date);
                     }
 
                 })
@@ -103,35 +102,6 @@ public class AttendanceCheckList extends AppCompatActivity {
 
             } else if (result.equalsIgnoreCase("false")) {
                 Toast.makeText(AttendanceCheckList.this, "FALSE", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    class AsyncDeleteAT extends GlobalAsyncTask {
-
-        AsyncDeleteAT(Context context, String url) {
-            super(context, url);
-            execute();
-        }
-
-        @Override
-        public Uri.Builder urlBuilder() {
-            return new Uri.Builder()
-                    .appendQueryParameter("batchid", currentPeriod.batchid)
-                    .appendQueryParameter("clid", currentPeriod.clid)
-                    .appendQueryParameter("subid", currentPeriod.subid)
-                    .appendQueryParameter("tid", currentPeriod.tid)
-                    .appendQueryParameter("start", currentPeriod.START)
-                    .appendQueryParameter("date", date);
-        }
-
-        @Override
-        public void goPostExecute(String result, String content) {
-
-            if (result.equalsIgnoreCase("success")) {
-                Toast.makeText(self, "Attendance deleted", Toast.LENGTH_LONG).show();
-            } else if (result.equalsIgnoreCase("failed")) {
-                Toast.makeText(self, "Failed to delete Attendance", Toast.LENGTH_LONG).show();
             }
         }
     }

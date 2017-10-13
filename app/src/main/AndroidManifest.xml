@@ -33,7 +33,12 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".AttendanceCheckList" />
         <activity android:name=".SubjectsActivity" />
-        <activity android:name=".ReportActivity"></activity>
+        <activity android:name=".ReportActivity" />
+        <activity
+            android:name=".OthersDailyPeriodActivity"
+            android:label="@string/title_activity_others_daily_period"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".OldPeriodActivity"></activity>
     </application>
 
 </manifest>
