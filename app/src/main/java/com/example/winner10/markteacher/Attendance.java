@@ -36,7 +36,6 @@ public class Attendance extends AppCompatActivity {
 
         init();
         new AsyncStartAT(self, "getStudents.php");
-        new AsyncSetATAccess(self, currentPeriod, "1");
     }
 
     void init() {
@@ -70,7 +69,7 @@ public class Attendance extends AppCompatActivity {
                     }
 
                 })
-                .setNegativeButton("No", null)
+                .setNegativeButton("No",null)
                 .show();
     }
 
@@ -107,6 +106,7 @@ public class Attendance extends AppCompatActivity {
                 try {
                     JSONArray jArray = new JSONArray(result);
                     AttendanceList sd = new AttendanceList();
+                    new AsyncSetATAccess(self, currentPeriod, "1");
 
                     AdapterAttendance mAdapter = new AdapterAttendance(self, sd.parseStudentList(jArray));
                     RecyclerView attendanceList = (RecyclerView) findViewById(R.id.studentslist);

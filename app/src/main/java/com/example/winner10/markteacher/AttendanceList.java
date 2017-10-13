@@ -13,28 +13,27 @@ import java.util.List;
  */
 
 class AttendanceList {
-    String stuid, studentid, subid, clid, tid, start, date, status;
-    String sap;
+    String atrid, stuid, studentid, subid, clid, tid, start, date, status;
+
+    public AttendanceList() {}
+
+
+    public AttendanceList(AttendanceList copy) {
+        this.atrid = copy.atrid;
+        this.stuid = copy.stuid;
+        this.studentid = copy.studentid;
+        this.subid = copy.subid;
+        this.clid = copy.clid;
+        this.tid = copy.tid;
+        this.start = copy.start;
+        this.date = copy.date;
+        this.status = copy.status;
+    }
 
     AttendanceList parseObject(JSONObject data) throws JSONException {
         AttendanceList obj = new AttendanceList();
 
-        obj.stuid = data.getString("stuid");
-        obj.subid = data.getString("subid");
-        obj.clid = data.getString("clid");
-        obj.tid = data.getString("tid");
-        obj.date = data.getString("tid");
-        obj.status = data.getString("status");
-
-        String tstart = data.getString("start");
-        obj.start = tstart.substring(0, tstart.length() - 3);
-
-        return obj;
-    }
-
-    AttendanceList setStudent(JSONObject data) throws JSONException {
-        AttendanceList obj = new AttendanceList();
-
+        obj.atrid = data.getString("atrid");
         obj.stuid = data.getString("stuid");
         obj.studentid = data.getString("studentid");
         obj.subid = data.getString("subid");
@@ -52,11 +51,20 @@ class AttendanceList {
 
         for (int i = 0; i < jArray.length(); i++) {
             JSONObject json_data = jArray.getJSONObject(i);
-            list.add(setStudent(json_data));
+            list.add(parseObject(json_data));
         }
 
         return list;
     }
 
-
+    public String toString(){
+        return "studi: " + stuid +
+                " studentid: " + studentid +
+                " subid: " + subid +
+                " clid: " + clid +
+                " tid: " + tid +
+                " start: " + start +
+                " date: " + date +
+                " status: " + status;
+    }
 }

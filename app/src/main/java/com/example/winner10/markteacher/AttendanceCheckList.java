@@ -28,6 +28,7 @@ public class AttendanceCheckList extends AppCompatActivity {
     DailyPeriod currentPeriod;
     Context self;
     String date;
+    AdapterAttendanceCheckList mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,22 +92,61 @@ public class AttendanceCheckList extends AppCompatActivity {
                     JSONArray jArray = new JSONArray(result);
                     AttendanceList sd = new AttendanceList();
 
-                    AdapterAttendanceCheckList mAdapter = new AdapterAttendanceCheckList(self, sd.parseStudentList(jArray));
+                    mAdapter = new AdapterAttendanceCheckList(self, sd.parseStudentList(jArray));
                     RecyclerView attendanceList = (RecyclerView) findViewById(R.id.studentsCheckList);
                     attendanceList.setAdapter(mAdapter);
-                    attendanceList.setLayoutManager(new LinearLayoutManager(AttendanceCheckList.this));
+                    attendanceList.setLayoutManager(new LinearLayoutManager(self));
 
                 } catch (JSONException e) {
-                    Toast.makeText(AttendanceCheckList.this, e.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(self, e.toString(), Toast.LENGTH_LONG).show();
                 }
 
             } else if (result.equalsIgnoreCase("false")) {
-                Toast.makeText(AttendanceCheckList.this, "FALSE", Toast.LENGTH_LONG).show();
+                Toast.makeText(self, "FALSE", Toast.LENGTH_LONG).show();
             }
         }
     }
 
     public void confirmAt(View arg0) {
-        Util.closeActivityAlert("Are you sure you want to submit attendance?", self);
+
+        new android.app.AlertDialog.Builder(self)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Closing Activity")
+                .setMessage("Are you sure you want to submit attendance?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        new AsyncMarkBatchATList(self, "markBatchAT.php");
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    private class AsyncMarkBatchATList extends GlobalAsyncTask {
+
+        AsyncMarkBatchATList(Context context, String url) {
+            super(context, url);
+            execute();
+        }
+
+        @Override
+        public Uri.Builder urlBuilder() {
+            return new Uri.Builder()
+                    .appendQueryParameter("present", mAdapter.getPresent())
+                    .appendQueryParameter("absent", mAdapter.getAbsent());
+        }
+
+        @Override
+        public void goPostExecute(String result, String content) {
+            if (result.equalsIgnoreCase("success")) {
+                Toast.makeText(self, "Attendance Submitted Successful", Toast.LENGTH_LONG).show();
+            } else if (result.equalsIgnoreCase("failed") || result.startsWith("error")) {
+                Toast.makeText(self, "Failed to submit the attendance", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(self, "Invalid Details", Toast.LENGTH_LONG).show();
+            }
+            ((Activity) self).finish();
+        }
     }
 }
