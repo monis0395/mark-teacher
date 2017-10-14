@@ -68,8 +68,8 @@ public class ReportActivity extends AppCompatActivity {
                         Report studentData = new Report();
 
                         studentData.student = json_data.getString("student");
-                        studentData.la = Integer.parseInt(json_data.getString("la"));
-                        studentData.lt= Integer.parseInt(json_data.getString("lt"));
+//                        studentData.la = Integer.parseInt(json_data.getString("la"));
+//                        studentData.lt= Integer.parseInt(json_data.getString("lt"));
 
                         data.add(studentData);
                     }
